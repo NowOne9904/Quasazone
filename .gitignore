@@ -1,2 +1,4 @@
 Token.txt
 .env
+.vercel
+.env*.local

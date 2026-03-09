@@ -9,18 +9,22 @@ export const revalidate = 21600; // 6 hours
 
 export default async function WidgetPage() {
     return (
-        <main className="min-h-screen p-4 md:p-6 lg:p-8 bg-gray-50 flex justify-center selection:bg-indigo-100 selection:text-indigo-900">
-            <div className="w-full max-w-5xl space-y-8">
+        // Hard constraint to 647px max width, centered.
+        <main className="w-full max-w-[647px] mx-auto min-h-screen p-4 bg-[#1a1a1a] rounded-lg shadow-2xl border border-zinc-800 selection:bg-indigo-500/30 selection:text-indigo-200">
+            <div className="w-full space-y-6">
                 {/* Header / Intro */}
-                <header className="flex items-center justify-between pb-4 border-b border-gray-200">
+                <header className="flex items-center justify-between pb-3 border-b border-zinc-800">
                     <div>
-                        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900">영재컴퓨터 맞춤형 견적 솔루션</h1>
-                        <p className="text-sm font-medium text-gray-500 mt-1">전문가가 제안하는 당신을 위한 최적의 시스템</p>
+                        <h1 className="text-xl font-extrabold tracking-tight text-white flex items-center gap-2">
+                            <span className="w-2 h-6 bg-indigo-500 rounded-sm inline-block"></span>
+                            맞춤형 견적 솔루션
+                        </h1>
+                        <p className="text-[11px] font-medium text-zinc-400 mt-1 pl-4">영재컴퓨터가 제안하는 완벽한 시스템</p>
                     </div>
-                    <div className="hidden sm:flex items-center space-x-2 text-xs font-bold text-emerald-700 bg-emerald-100/50 px-3 py-1.5 rounded-full border border-emerald-200">
-                        <span className="relative flex h-2 w-2">
+                    <div className="flex items-center space-x-1.5 text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded-full border border-emerald-500/20">
+                        <span className="relative flex h-1.5 w-1.5">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                            <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
                         </span>
                         <span>Static Cached (6h)</span>
                     </div>

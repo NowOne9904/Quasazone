@@ -13,7 +13,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className="antialiased bg-gray-50 text-gray-900 border-none m-0 p-0">
+      {/* 
+        Using bg-transparent allows the iframe to perfectly blend with Quasarzone's 
+        user-selected theme (light/dark base). We force dark mode elements internally.
+      */}
+      <body className="antialiased bg-transparent text-zinc-100 border-none m-0 p-0 overflow-x-hidden">
         {children}
       </body>
     </html>
