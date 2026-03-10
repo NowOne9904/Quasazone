@@ -10,10 +10,11 @@ export const revalidate = 10800; // 3시간 (최소 주기 기준)
 export default async function WidgetPage({
     searchParams,
 }: {
-    searchParams: Promise<{ price?: string }>;
+    searchParams: Promise<{ price?: string; gpu?: string }>;
 }) {
     const params = await searchParams;
     const quotePrice = params.price ? parseInt(params.price, 10) : undefined;
+    const quoteGpu = params.gpu ?? undefined;
 
     return (
         // Hard constraint to 647px max width, centered.
@@ -41,7 +42,7 @@ export default async function WidgetPage({
                 <QuotePlaceholder />
 
                 {/* 2. Smart Suggest Tier Section */}
-                <SmartSuggestTier quotePrice={quotePrice} />
+                <SmartSuggestTier quotePrice={quotePrice} quoteGpu={quoteGpu} />
 
                 {/* 3. Recommended PCs Section */}
                 <RecommendedPCs />
