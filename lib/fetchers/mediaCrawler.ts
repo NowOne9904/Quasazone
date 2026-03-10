@@ -15,12 +15,66 @@ export interface YouTubeVideo {
     url: string;
 }
 
+const CAFE_ID = 31248285;
+const MENU_ID = 1;
+
+async function getNaverAccessToken(): Promise<string | null> {
+    const refreshToken = process.env.NAVER_REFRESH_TOKEN;
+    if (!refreshToken) return null;
+
+    const res = await fetch(
+        `https://nid.naver.com/oauth2.0/token` +
+        `?grant_type=refresh_token` +
+        `&client_id=${process.env.NAVER_CLIENT_ID}` +
+        `&client_secret=${process.env.NAVER_CLIENT_SECRET}` +
+        `&refresh_token=${refreshToken}`,
+        { cache: "no-store" }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.access_token ?? null;
+}
+
 export async function fetchLiveShipping(): Promise<CafePost[]> {
     // 3시간 캐시
     const revalidate = 10800;
 
+    // Naver Open API로 실데이터 시도
     try {
-        // 새 Naver Cafe URL (사진 보기 모드)
+        const accessToken = await getNaverAccessToken();
+        if (accessToken) {
+            const res = await fetch(
+                `https://openapi.naver.com/v1/cafe/cafes/${CAFE_ID}/menus/${MENU_ID}/articles?count=6`,
+                {
+                    next: { revalidate },
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                }
+            );
+            if (res.ok) {
+                const data = await res.json();
+                const articles = data.message?.result?.articleList ?? [];
+                if (articles.length > 0) {
+                    return articles.map((a: {
+                        articleId: number;
+                        subject: string;
+                        writeDateTimestamp: number;
+                        representImage?: string;
+                    }, _i: number) => ({
+                        id: `cafe-${a.articleId}`,
+                        title: a.subject,
+                        time: formatRelativeTime(new Date(a.writeDateTimestamp).toISOString()),
+                        link: `https://cafe.naver.com/f-e/cafes/${CAFE_ID}/articles/${a.articleId}`,
+                        img: a.representImage ?? "",
+                    }));
+                }
+            }
+        }
+    } catch {
+        // 폴백으로 진행
+    }
+
+    try {
+        // 구 방식 크롤링 시도
         const res = await fetch(
             "https://cafe.naver.com/ArticleList.nhn?search.clubid=31248285&search.menuid=1&search.boardtype=I",
             {
