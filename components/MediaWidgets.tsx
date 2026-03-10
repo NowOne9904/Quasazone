@@ -7,7 +7,7 @@ export default async function MediaWidgets() {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {/* Section 4: Latest YouTube Widget */}
+            {/* 최신 리뷰 (YouTube) */}
             <a href={ytVideo.url} target="_blank" rel="noopener noreferrer" className="block h-full">
                 <section className="bg-zinc-900/80 rounded-2xl overflow-hidden border border-zinc-800 flex flex-col h-full group cursor-pointer hover:border-zinc-700 transition-all">
                     <div className="bg-red-500/10 px-3 py-2 flex items-center justify-between">
@@ -37,33 +37,57 @@ export default async function MediaWidgets() {
                 </section>
             </a>
 
-            {/* Section 5: Live Shipping Status (Naver Cafe) */}
-            <section className="bg-zinc-900/80 rounded-2xl p-4 border border-zinc-800 flex flex-col h-full hover:border-zinc-700 transition-all">
-                <div className="flex items-center justify-between mb-3 border-b border-zinc-800 pb-2.5">
+            {/* 실시간 조립/출고 - 사진 그리드 */}
+            <section className="bg-zinc-900/80 rounded-2xl overflow-hidden border border-zinc-800 flex flex-col h-full hover:border-zinc-700 transition-all">
+                <div className="flex items-center justify-between px-3 py-2 border-b border-zinc-800">
                     <div className="flex items-center space-x-1.5">
                         <BellRing className="w-4 h-4 text-indigo-400 fill-indigo-400/20" />
                         <h2 className="font-bold text-zinc-100 tracking-tight text-xs">실시간 조립/출고</h2>
                     </div>
                     <div className="flex items-center text-[10px] text-zinc-500">
                         <Clock className="w-2.5 h-2.5 mr-1" />
-                        <span>최근 업데이트</span>
+                        <span>3h 갱신</span>
                     </div>
                 </div>
 
-                <div className="flex-grow flex flex-col space-y-2.5 relative justify-center">
-                    <div className="absolute left-2 top-2 bottom-2 w-px bg-zinc-800"></div>
-
+                {/* 사진 그리드 */}
+                <div className="flex-grow p-2 grid grid-cols-3 gap-1.5">
                     {cafePosts.map((post) => (
-                        <div key={post.id} className="relative pl-6 group cursor-pointer">
-                            <div className="absolute left-1 top-1.5 w-2 h-2 rounded-full bg-zinc-600 ring-2 ring-zinc-900 group-hover:bg-indigo-500 transition-colors"></div>
-                            <p className="text-xs text-zinc-300 font-medium group-hover:text-indigo-300 transition-colors truncate">{post.title}</p>
-                            <p className="text-[10px] text-zinc-600 mt-0.5">{post.time}</p>
-                        </div>
+                        <a
+                            key={post.id}
+                            href={post.link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group relative aspect-square rounded-lg overflow-hidden bg-zinc-800 block"
+                        >
+                            {post.img ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img
+                                    src={post.img}
+                                    alt={post.title}
+                                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
+                                />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-zinc-600">
+                                    <BellRing className="w-5 h-5" />
+                                </div>
+                            )}
+                            {/* 제목 오버레이 */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
+                                <p className="text-[9px] text-white font-medium leading-tight line-clamp-2">{post.title}</p>
+                            </div>
+                        </a>
                     ))}
                 </div>
-                <button className="mt-3 w-full py-2 bg-zinc-800 hover:bg-indigo-500/10 text-indigo-400 font-semibold text-[11px] rounded-lg transition-colors border border-zinc-700 hover:border-indigo-500/30">
+
+                <a
+                    href="https://cafe.naver.com/f-e/cafes/31248285/menus/1?viewType=I"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mx-2 mb-2 py-2 bg-zinc-800 hover:bg-indigo-500/10 text-indigo-400 font-semibold text-[11px] rounded-lg transition-colors border border-zinc-700 hover:border-indigo-500/30 text-center block"
+                >
                     모든 출고현황 보기
-                </button>
+                </a>
             </section>
         </div>
     );
