@@ -1,7 +1,7 @@
-import QuotePlaceholder from "@/components/QuotePlaceholder";
 import SmartSuggestTier from "@/components/SmartSuggestTier";
-import RecommendedPCs from "@/components/RecommendedPCs";
+import ResolutionPerformance from "@/components/ResolutionPerformance";
 import MediaWidgets from "@/components/MediaWidgets";
+import RecommendedPCs from "@/components/RecommendedPCs";
 import PremiumBadges from "@/components/PremiumBadges";
 
 // Server Component - 최소 갱신 주기: Naver Cafe 3시간, YouTube/PC 6시간
@@ -38,19 +38,19 @@ export default async function WidgetPage({
                     </div>
                 </header>
 
-                {/* 1. Placeholder Section */}
-                <QuotePlaceholder />
-
-                {/* 2. Smart Suggest Tier Section */}
+                {/* 1. Smart Suggest Tier Section */}
                 <SmartSuggestTier quotePrice={quotePrice} quoteGpu={quoteGpu} />
 
-                {/* 3. Recommended PCs Section */}
-                <RecommendedPCs />
+                {/* 2. Resolution Performance Guide */}
+                <ResolutionPerformance />
 
-                {/* 4 & 5. Media Widgets (YouTube / Live Shipping) */}
+                {/* 3. Media Widgets (YouTube / Live Shipping) */}
                 <MediaWidgets />
 
-                {/* 6. Premium Services Badges */}
+                {/* 4. Recommended PCs Section */}
+                <RecommendedPCs />
+
+                {/* 5. Premium Services Badges */}
                 <PremiumBadges />
 
             </div>
