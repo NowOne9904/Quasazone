@@ -1,6 +1,6 @@
 import SmartSuggestTier from "@/components/SmartSuggestTier";
 import ResolutionPerformance from "@/components/ResolutionPerformance";
-import MediaWidgets from "@/components/MediaWidgets";
+import { YouTubeReviewWidget, LiveShippingWidget } from "@/components/MediaWidgets";
 import RecommendedPCs from "@/components/RecommendedPCs";
 import PremiumBadges from "@/components/PremiumBadges";
 
@@ -38,19 +38,22 @@ export default async function WidgetPage({
                     </div>
                 </header>
 
-                {/* 1. Smart Suggest Tier Section */}
+                {/* 1. Resolution Performance Guide (Technical Reference - Top Priority) */}
+                <ResolutionPerformance gpu={quoteGpu} />
+
+                {/* 2. Smart Suggest Tier Section (Personalized Recommendation) */}
                 <SmartSuggestTier quotePrice={quotePrice} quoteGpu={quoteGpu} />
 
-                {/* 2. Resolution Performance Guide */}
-                <ResolutionPerformance />
+                {/* 3. Live Shipping Widget (Social Proof - Cafe) */}
+                <LiveShippingWidget />
 
-                {/* 3. Media Widgets (YouTube / Live Shipping) */}
-                <MediaWidgets />
+                {/* 4. YouTube Review Widget (Social Proof - YouTube) */}
+                <YouTubeReviewWidget />
 
-                {/* 4. Recommended PCs Section */}
+                {/* 5. Recommended PCs Section (Product Suggestions) */}
                 <RecommendedPCs />
 
-                {/* 5. Premium Services Badges */}
+                {/* 6. Premium Services Badges (Trust) */}
                 <PremiumBadges />
 
             </div>
