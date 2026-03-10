@@ -1,19 +1,20 @@
 export interface TierConfig {
     tier: number;
     label: string;
+    cpu: string; // 대표 CPU (검색용)
     nvidia: { gpu: string; displayName: string } | null;
     amd:   { gpu: string; displayName: string } | null;
 }
 
 // 성능 기준 티어 (낮을수록 저렴)
 export const TIER_CONFIGS: TierConfig[] = [
-    { tier: 1, label: "표준 게이밍",  nvidia: { gpu: "5060",    displayName: "RTX 5060"    }, amd: { gpu: "7600XT",  displayName: "RX 7600 XT"  } },
-    { tier: 2, label: "미드레인지",   nvidia: { gpu: "5060Ti",  displayName: "RTX 5060 Ti" }, amd: { gpu: "7700XT",  displayName: "RX 7700 XT"  } },
-    { tier: 3, label: "고성능",       nvidia: { gpu: "4070",    displayName: "RTX 4070"    }, amd: { gpu: "7800XT",  displayName: "RX 7800 XT"  } },
-    { tier: 4, label: "하이엔드",     nvidia: { gpu: "5070",    displayName: "RTX 5070"    }, amd: { gpu: "9070XT",  displayName: "RX 9070 XT"  } },
-    { tier: 5, label: "플래그십",     nvidia: { gpu: "5070Ti",  displayName: "RTX 5070 Ti" }, amd: { gpu: "9080",    displayName: "RX 9080"     } },
-    { tier: 6, label: "익스트림",     nvidia: { gpu: "5080",    displayName: "RTX 5080"    }, amd: null },
-    { tier: 7, label: "얼티밋",       nvidia: { gpu: "5090",    displayName: "RTX 5090"    }, amd: null },
+    { tier: 1, label: "표준 게이밍",  cpu: "7500F",   nvidia: { gpu: "5060",    displayName: "RTX 5060"    }, amd: { gpu: "7600XT",  displayName: "RX 7600 XT"  } },
+    { tier: 2, label: "미드레인지",   cpu: "7600",    nvidia: { gpu: "5060Ti",  displayName: "RTX 5060 Ti" }, amd: { gpu: "7700XT",  displayName: "RX 7700 XT"  } },
+    { tier: 3, label: "고성능",       cpu: "7700X",   nvidia: { gpu: "4070",    displayName: "RTX 4070"    }, amd: { gpu: "7800XT",  displayName: "RX 7800 XT"  } },
+    { tier: 4, label: "하이엔드",     cpu: "9700X",   nvidia: { gpu: "5070",    displayName: "RTX 5070"    }, amd: { gpu: "9070XT",  displayName: "RX 9070 XT"  } },
+    { tier: 5, label: "플래그십",     cpu: "9800X3D", nvidia: { gpu: "5070Ti",  displayName: "RTX 5070 Ti" }, amd: { gpu: "9080",    displayName: "RX 9080"     } },
+    { tier: 6, label: "익스트림",     cpu: "9900X",   nvidia: { gpu: "5080",    displayName: "RTX 5080"    }, amd: null },
+    { tier: 7, label: "얼티밋",       cpu: "9950X",   nvidia: { gpu: "5090",    displayName: "RTX 5090"    }, amd: null },
 ];
 
 // GPU 문자열 → { tier, brand }
@@ -77,8 +78,8 @@ export function lookupGpu(gpuParam: string): GpuLookupResult | null {
     return { tier: found.tier, brand: found.brand, config };
 }
 
-export function buildSearchUrl(gpuKeyword: string): string {
-    return `https://www.youngjaecomputer.com/shop/search.php?search_text=${encodeURIComponent(gpuKeyword)}`;
+export function buildSearchUrl(cpu: string, gpu: string): string {
+    return `https://www.youngjaecomputer.com/shop/search.php?search_text=${encodeURIComponent(`${cpu}+${gpu}`)}`;
 }
 
 /** GPU 결과로부터 상위/동급(브랜드변경)/하위 카드 데이터 생성 */
@@ -98,19 +99,19 @@ export function buildTierCards(result: GpuLookupResult) {
             label: "상위 제안",
             tierLabel: upperConfig.label,
             gpu: (upperConfig.nvidia ?? upperConfig.amd)!,
-            searchUrl: buildSearchUrl((upperConfig.nvidia ?? upperConfig.amd)!.gpu),
+            searchUrl: buildSearchUrl(upperConfig.cpu, (upperConfig.nvidia ?? upperConfig.amd)!.gpu),
         } : null,
         same: altGpu ? {
             label: "동급 대안",
             tierLabel: `${config.label} (브랜드 변경)`,
             gpu: altGpu,
-            searchUrl: buildSearchUrl(altGpu.gpu),
+            searchUrl: buildSearchUrl(config.cpu, altGpu.gpu),
         } : null,
         lower: lowerConfig ? {
             label: "가성비 선택",
             tierLabel: lowerConfig.label,
             gpu: (lowerConfig.nvidia ?? lowerConfig.amd)!,
-            searchUrl: buildSearchUrl((lowerConfig.nvidia ?? lowerConfig.amd)!.gpu),
+            searchUrl: buildSearchUrl(lowerConfig.cpu, (lowerConfig.nvidia ?? lowerConfig.amd)!.gpu),
         } : null,
     };
 }
