@@ -4,10 +4,17 @@ import RecommendedPCs from "@/components/RecommendedPCs";
 import MediaWidgets from "@/components/MediaWidgets";
 import PremiumBadges from "@/components/PremiumBadges";
 
-// Server Component - This page will be statically generated and revalidated every 6 hours
-export const revalidate = 21600; // 6 hours
+// Server Component - 최소 갱신 주기: Naver Cafe 3시간, YouTube/PC 6시간
+export const revalidate = 10800; // 3시간 (최소 주기 기준)
 
-export default async function WidgetPage() {
+export default async function WidgetPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ price?: string }>;
+}) {
+    const params = await searchParams;
+    const quotePrice = params.price ? parseInt(params.price, 10) : undefined;
+
     return (
         // Hard constraint to 647px max width, centered.
         <main className="w-full max-w-[647px] mx-auto min-h-screen p-4 bg-[#1a1a1a] rounded-lg shadow-2xl border border-zinc-800 selection:bg-indigo-500/30 selection:text-indigo-200">
@@ -34,7 +41,7 @@ export default async function WidgetPage() {
                 <QuotePlaceholder />
 
                 {/* 2. Smart Suggest Tier Section */}
-                <SmartSuggestTier />
+                <SmartSuggestTier quotePrice={quotePrice} />
 
                 {/* 3. Recommended PCs Section */}
                 <RecommendedPCs />
