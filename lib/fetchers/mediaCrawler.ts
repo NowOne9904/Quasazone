@@ -111,40 +111,68 @@ const fallbackPosts: CafePost[] = [
     },
 ];
 
+// 채널 ID: YJMOD x 영재컴퓨터
+const YT_CHANNEL_ID = "UCaOwfLJxMjZ8RCBwg8_c90A";
+
 export async function fetchLatestYouTube(): Promise<YouTubeVideo> {
     try {
-        const rssUrl = encodeURIComponent(
-            "https://www.youtube.com/feeds/videos.xml?channel_id=UCT-Oib2FDEcEhe8UInb0Yqw"
-        );
         const res = await fetch(
-            `https://api.rss2json.com/v1/api.json?rss_url=${rssUrl}`,
-            { next: { revalidate: 21600 } }
+            `https://www.youtube.com/feeds/videos.xml?channel_id=${YT_CHANNEL_ID}`,
+            { next: { revalidate: 21600 } } // 6시간
         );
 
-        if (!res.ok) throw new Error("YouTube RSS failed");
+        if (!res.ok) throw new Error(`YouTube RSS failed: ${res.status}`);
 
-        const data = await res.json();
-        // Shorts 제외: 제목에 #shorts 없고 링크에 /shorts/ 없는 것
-        const video = data.items?.find((item: { title: string; link?: string }) =>
-            !item.title.toLowerCase().includes('#shorts') &&
-            !item.link?.includes('/shorts/')
-        );
+        const xml = await res.text();
+        const $ = cheerio.load(xml, { xmlMode: true });
 
-        if (video) {
-            return {
-                title: video.title,
-                thumbnail: video.thumbnail,
-                publishedStr: "최근 업로드됨",
-                url: video.link
+        let result: YouTubeVideo | null = null;
+
+        $("entry").each((_, el) => {
+            if (result) return false;
+
+            const link = $(el).find("link").attr("href") || "";
+            // 쇼츠 제외
+            if (link.includes("/shorts/")) return;
+
+            const title = $(el).find("title").first().text().trim();
+            const videoId = $(el).find("yt\\:videoId, videoId").text().trim();
+            const thumbnail = $(el).find("media\\:thumbnail, thumbnail").attr("url")
+                || `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+            const published = $(el).find("published").text().trim();
+
+            result = {
+                title,
+                thumbnail,
+                publishedStr: published ? formatRelativeTime(published) : "최근 업로드됨",
+                url: link,
             };
-        }
+        });
+
+        if (result) return result;
         throw new Error("No non-shorts video found");
-    } catch {
+
+    } catch (error) {
+        console.error("YouTube RSS Error:", error);
         return {
-            title: "RTX 5060 vs RTX 4070 SUPER - 2026 표준 게이밍 비교 리뷰!",
-            thumbnail: "https://img.youtube.com/vi/jbWiVEnZXrg/hqdefault.jpg",
+            title: "대충사면 '절대' 안됩니다. 이 영상 '반드시' 보고 사세요.",
+            thumbnail: "https://i.ytimg.com/vi/z0h5U2GWWy8/hqdefault.jpg",
             publishedStr: "최근 업로드됨",
-            url: "https://www.youtube.com/@%EC%98%81%EC%9E%AC%EC%BB%B4%ED%93%A8%ED%84%B0YJMOD"
+            url: `https://www.youtube.com/watch?v=z0h5U2GWWy8`,
         };
+    }
+}
+
+function formatRelativeTime(isoString: string): string {
+    try {
+        const diff = Date.now() - new Date(isoString).getTime();
+        const hours = Math.floor(diff / 3_600_000);
+        if (hours < 1) return "방금 전";
+        if (hours < 24) return `${hours}시간 전`;
+        const days = Math.floor(hours / 24);
+        if (days < 7) return `${days}일 전`;
+        return `${Math.floor(days / 7)}주 전`;
+    } catch {
+        return "최근 업로드됨";
     }
 }

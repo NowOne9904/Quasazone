@@ -50,31 +50,35 @@ export default async function MediaWidgets() {
                     </div>
                 </div>
 
-                {/* 사진 그리드 */}
-                <div className="flex-grow p-2 grid grid-cols-3 gap-1.5">
+                {/* 썸네일(1:1) + 텍스트 리스트 */}
+                <div className="flex-grow flex flex-col divide-y divide-zinc-800">
                     {cafePosts.map((post) => (
                         <a
                             key={post.id}
                             href={post.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="group relative aspect-square rounded-lg overflow-hidden bg-zinc-800 block"
+                            className="group flex items-center gap-2.5 px-3 py-2 hover:bg-zinc-800/60 transition-colors"
                         >
-                            {post.img ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img
-                                    src={post.img}
-                                    alt={post.title}
-                                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-300"
-                                />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-zinc-600">
-                                    <BellRing className="w-5 h-5" />
-                                </div>
-                            )}
-                            {/* 제목 오버레이 */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-end p-1.5">
-                                <p className="text-[9px] text-white font-medium leading-tight line-clamp-2">{post.title}</p>
+                            {/* 1:1 썸네일 */}
+                            <div className="shrink-0 w-10 h-10 rounded-lg overflow-hidden bg-zinc-800">
+                                {post.img ? (
+                                    // eslint-disable-next-line @next/next/no-img-element
+                                    <img
+                                        src={post.img}
+                                        alt={post.title}
+                                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-200"
+                                    />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-zinc-600">
+                                        <BellRing className="w-4 h-4" />
+                                    </div>
+                                )}
+                            </div>
+                            {/* 텍스트 */}
+                            <div className="min-w-0">
+                                <p className="text-xs text-zinc-300 font-medium group-hover:text-indigo-300 transition-colors truncate leading-tight">{post.title}</p>
+                                <p className="text-[10px] text-zinc-600 mt-0.5">{post.time}</p>
                             </div>
                         </a>
                     ))}
