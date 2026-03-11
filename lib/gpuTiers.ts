@@ -156,24 +156,62 @@ export function lookupGpu(gpuParam: string): GpuLookupResult | null {
         }
     }
 
-    return null;
+    // 5. [신규 추가] 인식 실패 시 가장 근접한 사양 혹은 기본 표준 사양으로 추천
+    // 만약 상품명에 40, 50, 60, 70, 80, 90 등의 숫자가 있다면 해당 계열의 기본 티어로 fallback
+    const numbers = cleanedInput.match(/\d{4}/); // 4060, 3070 등 4자리 숫자 추출
+    if (numbers) {
+        const num = numbers[0];
+        if (num.startsWith("50")) return { tier: 6, brand: "nvidia", config: TIER_CONFIGS[5] };
+        if (num.startsWith("40")) return { tier: 5, brand: "nvidia", config: TIER_CONFIGS[4] };
+        if (num.startsWith("30")) return { tier: 3, brand: "nvidia", config: TIER_CONFIGS[2] };
+    }
+
+    // 완전히 알 수 없는 경우 '표준 게이밍(Tier 3)'을 기본값으로 하여 추천 서비스가 끊기지 않게 함
+    return { tier: 3, brand: "nvidia", config: TIER_CONFIGS[2], isFallback: true } as any;
 }
 
 export function buildSearchUrl(cpu: string, gpu: string): string {
     return `https://www.youngjaecomputer.com/shop/search.php?search_text=${encodeURIComponent(`${cpu}+${gpu}`)}`;
 }
 
-/** GPU 결과로부터 상위/동급(브랜드변경)/하위 카드 데이터 생성 */
-export function buildTierCards(result: GpuLookupResult) {
-    const { tier, brand, config } = result;
+/** CPU와 GPU 결과를 종합하여 상위/동급(밸런스)/하위 카드 데이터 생성 */
+export function buildTierCards(gpuResult: GpuLookupResult, cpuResult: CpuLookupResult | null) {
+    const { tier: gTier, brand, config: gConfig } = gpuResult;
+    const cTier = cpuResult?.tier ?? 0;
     const maxTier = TIER_CONFIGS.length;
 
-    const upperConfig = tier < maxTier ? TIER_CONFIGS.find(t => t.tier === tier + 1) : null;
-    const lowerConfig = tier > 1 ? TIER_CONFIGS.find(t => t.tier === tier - 1) : null;
+    // 1. 상위 제안: 기본적으로 한 단계 위 밸런스 셋트 제안
+    const upperConfig = gTier < maxTier ? TIER_CONFIGS.find(t => t.tier === gTier + 1) : null;
 
-    // 동급은 반대 브랜드
+    // 2. 동급 대안 / 밸런스 교정
+    let sameCard = null;
     const altBrand = brand === "nvidia" ? "amd" : "nvidia";
-    const altGpu = config[altBrand];
+    const altGpu = gConfig[altBrand];
+
+    // 병목이 심한 경우 (CPU 티어가 GPU보다 2단계 이상 낮을 때) 밸런스 교정 제안을 우선함
+    if (gTier > 0 && cTier > 0 && gTier - cTier >= 2) {
+        const balancedConfig = TIER_CONFIGS.find(t => t.tier === gTier)!;
+        sameCard = {
+            label: "밸런스 교정",
+            tierLabel: "CPU 성능 보강 제안",
+            gpu: (balancedConfig.nvidia ?? balancedConfig.amd)!,
+            cpu: balancedConfig.cpuDisplayName,
+            searchUrl: buildSearchUrl(balancedConfig.cpu, (balancedConfig.nvidia ?? balancedConfig.amd)!.gpu),
+            isCorrection: true
+        };
+    } else if (altGpu) {
+        sameCard = {
+            label: "동급 대안",
+            tierLabel: `${gConfig.label} (브랜드 변경)`,
+            gpu: altGpu,
+            cpu: gConfig.cpuDisplayName,
+            searchUrl: buildSearchUrl(gConfig.cpu, altGpu.gpu),
+            isCorrection: false
+        };
+    }
+
+    // 3. 가성비 선택: 한 단계 아래 밸런스 셋트 제안
+    const lowerConfig = gTier > 1 ? TIER_CONFIGS.find(t => t.tier === gTier - 1) : null;
 
     return {
         upper: upperConfig ? {
@@ -182,20 +220,16 @@ export function buildTierCards(result: GpuLookupResult) {
             gpu: (upperConfig.nvidia ?? upperConfig.amd)!,
             cpu: upperConfig.cpuDisplayName,
             searchUrl: buildSearchUrl(upperConfig.cpu, (upperConfig.nvidia ?? upperConfig.amd)!.gpu),
+            isCorrection: false
         } : null,
-        same: altGpu ? {
-            label: "동급 대안",
-            tierLabel: `${config.label} (브랜드 변경)`,
-            gpu: altGpu,
-            cpu: config.cpuDisplayName,
-            searchUrl: buildSearchUrl(config.cpu, altGpu.gpu),
-        } : null,
+        same: sameCard,
         lower: lowerConfig ? {
             label: "가성비 선택",
             tierLabel: lowerConfig.label,
             gpu: (lowerConfig.nvidia ?? lowerConfig.amd)!,
             cpu: lowerConfig.cpuDisplayName,
             searchUrl: buildSearchUrl(lowerConfig.cpu, (lowerConfig.nvidia ?? lowerConfig.amd)!.gpu),
+            isCorrection: false
         } : null,
     };
 }

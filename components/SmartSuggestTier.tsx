@@ -1,10 +1,11 @@
 import { ArrowUpRight, ArrowRight, ArrowDownRight, Zap, Link2, Cpu, MessageCircle } from "lucide-react";
 import { fetchRecommendedPCs, RecommendedPC } from "@/lib/fetchers/yjmodCrawler";
-import { lookupGpu, buildTierCards } from "@/lib/gpuTiers";
+import { lookupGpu, lookupCpu, buildTierCards } from "@/lib/gpuTiers";
 
 interface Props {
     quotePrice?: number;
     quoteGpu?: string;
+    quoteCpu?: string;
 }
 
 const parsePrice = (p: string) => parseInt(p.replace(/,/g, ""), 10) || 0;
@@ -15,25 +16,16 @@ const SLOT_STYLES = [
     { Icon: ArrowDownRight, bg: "bg-rose-500/10", text: "text-rose-400", border: "border-rose-500/20" },
 ];
 
-export default async function SmartSuggestTier({ quotePrice, quoteGpu }: Props) {
+export default async function SmartSuggestTier({ quotePrice, quoteGpu, quoteCpu }: Props) {
 
     // ── GPU 파라미터가 있으면 GPU 기반 티어 추천 ──────────────────────────
     if (quoteGpu) {
         const gpuResult = lookupGpu(quoteGpu);
+        const cpuResult = quoteCpu ? lookupCpu(quoteCpu) : null;
 
-        if (!gpuResult) {
-            // 알 수 없는 GPU 모델
-            return (
-                <section className="space-y-3">
-                    <SectionHeader />
-                    <div className="flex items-center justify-center gap-2 py-5 rounded-xl border border-dashed border-zinc-700 bg-zinc-900/40 text-zinc-500">
-                        <p className="text-xs">인식되지 않은 GPU 모델: <span className="text-zinc-400 font-mono">{quoteGpu}</span></p>
-                    </div>
-                </section>
-            );
-        }
+        if (!gpuResult) return null; // 사실상 이제 lookupGpu가 항상 기본값을 반환하므로 null일 리 없음
 
-        const { upper, same, lower } = buildTierCards(gpuResult);
+        const { upper, same, lower } = buildTierCards(gpuResult, cpuResult);
         const cards = [upper, same, lower];
 
         return (
@@ -67,10 +59,10 @@ export default async function SmartSuggestTier({ quotePrice, quoteGpu }: Props) 
                             >
                                 <div>
                                     <div className="flex justify-between items-start mb-2">
-                                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold ${style.bg} ${style.text}`}>
+                                        <span className={`inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold ${card.isCorrection ? "bg-amber-500 text-white" : `${style.bg} ${style.text}`}`}>
                                             {card.label}
                                         </span>
-                                        <div className={`p-1 rounded-lg ${style.bg} ${style.text}`}>
+                                        <div className={`p-1 rounded-lg ${card.isCorrection ? "bg-amber-500/10 text-amber-500" : `${style.bg} ${style.text}`}`}>
                                             <style.Icon className="w-3 h-3" />
                                         </div>
                                     </div>
@@ -81,17 +73,19 @@ export default async function SmartSuggestTier({ quotePrice, quoteGpu }: Props) 
                                         </span>
                                         + {card.gpu.displayName}
                                     </h3>
-                                    <p className="text-[10px] text-zinc-500 mt-1 truncate leading-tight">{card.tierLabel}</p>
+                                    <p className={`text-[10px] mt-1 truncate leading-tight ${card.isCorrection ? "text-amber-400/80 font-bold" : "text-zinc-500"}`}>
+                                        {card.tierLabel}
+                                    </p>
                                 </div>
                                 <div className="mt-4">
                                     <a
                                         href={card.searchUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`w-full py-1.5 px-2 rounded-lg text-[10px] font-extrabold text-center transition-all ${style.bg} ${style.text} border ${style.border} hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1`}
+                                        className={`w-full py-1.5 px-2 rounded-lg text-[10px] font-extrabold text-center transition-all ${card.isCorrection ? "bg-amber-500 text-white border-amber-600" : `${style.bg} ${style.text} border ${style.border}`} hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1`}
                                     >
                                         <Link2 className="w-2.5 h-2.5" />
-                                        <span>YJMOD 검색</span>
+                                        <span>{card.isCorrection ? "밸런스 견적 보기" : "YJMOD 검색"}</span>
                                     </a>
                                 </div>
                             </div>

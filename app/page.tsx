@@ -45,7 +45,7 @@ export default async function WidgetPage({
                 <ResolutionPerformance gpu={quoteGpu} cpu={quoteCpu} />
 
                 {/* 2. Smart Suggest Tier Section (Personalized Recommendation) */}
-                <SmartSuggestTier quotePrice={quotePrice} quoteGpu={quoteGpu} />
+                <SmartSuggestTier quotePrice={quotePrice} quoteGpu={quoteGpu} quoteCpu={quoteCpu} />
 
                 {/* 3. Live Shipping Widget (Social Proof - Cafe) */}
                 <LiveShippingWidget />
