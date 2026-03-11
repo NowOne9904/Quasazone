@@ -77,6 +77,27 @@ function normalize(raw: string): string {
         .replace(/^rx/, "");
 }
 
+// CPU 문자열 → Tier
+const CPU_LOOKUP: Record<string, number> = {
+    // AMD
+    "7500f": 3, "7600": 4, "7700": 5, "7700x": 5, "9700x": 6, "7800x3d": 7, "9800x3d": 9, "9900x": 8, "9950x": 9,
+    "5600": 1, "5600x": 2, "5700x": 3, "5800x3d": 5,
+    // Intel
+    "12100": 1, "12400": 2, "13400": 3, "14400": 3, "13600": 5, "14600": 5, "13700": 6, "14700": 7, "13900": 8, "14900": 9,
+    "245k": 6, "265k": 8, "285k": 9
+};
+
+export function lookupCpu(cpuParam: string): number {
+    if (!cpuParam) return 0;
+    const cleaned = cpuParam.toLowerCase().replace(/[\s\-_]+/g, "");
+
+    // 키워드 매칭 (예: "i5-14400F" -> "14400" 매칭)
+    for (const [key, tier] of Object.entries(CPU_LOOKUP)) {
+        if (cleaned.includes(key)) return tier;
+    }
+    return 0;
+}
+
 export interface GpuLookupResult {
     tier: number;
     brand: "nvidia" | "amd";
