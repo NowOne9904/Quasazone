@@ -63,6 +63,7 @@ const GPU_LOOKUP: Record<string, { tier: number; brand: "nvidia" | "amd" }> = {
     "7900xtx": { tier: 8, brand: "amd" },
     "9070xt": { tier: 6, brand: "amd" },
     "9080": { tier: 7, brand: "amd" },
+    "9060xt": { tier: 5, brand: "amd" }, // 테스트용 추가
 };
 
 /** URL 파라미터로 넘어온 GPU 문자열을 정규화 (RTX/RX/공백 제거, 소문자) */
@@ -83,11 +84,27 @@ export interface GpuLookupResult {
 }
 
 export function lookupGpu(gpuParam: string): GpuLookupResult | null {
-    const key = normalize(gpuParam);
-    const found = GPU_LOOKUP[key];
-    if (!found) return null;
-    const config = TIER_CONFIGS.find(t => t.tier === found.tier)!;
-    return { tier: found.tier, brand: found.brand, config };
+    // 1. URL 인코딩된 문자열을 디코딩하고 정규화 (%20 -> 공백 등 처리)
+    let decoded = gpuParam;
+    try {
+        decoded = decodeURIComponent(gpuParam);
+    } catch (e) { }
+
+    const normalizedParam = decoded.toLowerCase().replace(/\s+/g, "");
+
+    // 2. 검색 키워드들을 글자수 내림차순으로 정렬 (예: '4070ti'를 '4070'보다 먼저 검색하여 오진 방지)
+    const sortedKeys = Object.keys(GPU_LOOKUP).sort((a, b) => b.length - a.length);
+
+    // 3. 상품명 안에 우리가 정의한 칩셋 키워드가 포함되어 있는지 하나씩 확인
+    for (const key of sortedKeys) {
+        if (normalizedParam.includes(key)) {
+            const found = GPU_LOOKUP[key];
+            const config = TIER_CONFIGS.find(t => t.tier === found.tier)!;
+            return { tier: found.tier, brand: found.brand, config };
+        }
+    }
+
+    return null;
 }
 
 export function buildSearchUrl(cpu: string, gpu: string): string {
