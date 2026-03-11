@@ -39,6 +39,18 @@
       "regex": "^/_not\\-found(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/api/naver/auth",
+      "regex": "^/api/naver/auth(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/naver/auth(?:/)?$"
+    },
+    {
+      "page": "/api/naver/callback",
+      "regex": "^/api/naver/callback(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/naver/callback(?:/)?$"
     }
   ],
   "dataRoutes": [],
