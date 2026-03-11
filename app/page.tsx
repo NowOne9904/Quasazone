@@ -10,13 +10,14 @@ export const revalidate = 1;
 export default async function WidgetPage({
     searchParams,
 }: {
-    searchParams: Promise<{ price?: string; gpu?: string }>;
+    searchParams: Promise<{ price?: string; gpu?: string; cpu?: string }>;
 }) {
     const params = await searchParams;
 
     // 테스트 및 미리보기를 위해 파라미터가 없을 경우 기본값(Sellpro 예시) 적용
     const quotePrice = params.price ? parseInt(params.price, 10) : 1313650;
     const quoteGpu = params.gpu ?? "ASRock 라데온 RX 9060 XT 스틸레전드 OC D6 8GB 대원씨티에스";
+    const quoteCpu = params.cpu ?? "AMD 라이젠5-5세대 7500F (라파엘)";
 
     return (
         // Hard constraint to 647px max width, centered.
@@ -41,7 +42,7 @@ export default async function WidgetPage({
                 </header>
 
                 {/* 1. Resolution Performance Guide (Technical Reference - Top Priority) */}
-                <ResolutionPerformance gpu={quoteGpu} />
+                <ResolutionPerformance gpu={quoteGpu} cpu={quoteCpu} />
 
                 {/* 2. Smart Suggest Tier Section (Personalized Recommendation) */}
                 <SmartSuggestTier quotePrice={quotePrice} quoteGpu={quoteGpu} />
