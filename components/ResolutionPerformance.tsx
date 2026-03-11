@@ -1,5 +1,5 @@
 import { Monitor, CheckCircle2 } from "lucide-react";
-import { lookupGpu } from "@/lib/gpuTiers";
+import { lookupGpu, lookupCpu } from "@/lib/gpuTiers";
 
 const RESOLUTIONS = [
     {
@@ -64,12 +64,25 @@ const RESOLUTIONS = [
     },
 ];
 
-export default function ResolutionPerformance({ gpu }: { gpu?: string }) {
+export default function ResolutionPerformance({ gpu, cpu }: { gpu?: string, cpu?: string }) {
     const userGpu = gpu ? lookupGpu(gpu) : null;
+    const userCpu = cpu ? lookupCpu(cpu) : null;
     const userTier = userGpu?.tier ?? 0;
+    const userCpuTier = userCpu?.tier ?? 0;
 
-    // 티어별 성능 배율 계산 (기준 티어: 4)
-    const performanceMultiplier = userTier > 0 ? 0.7 + (userTier - 1) * 0.15 : 1;
+    // 1. GPU 기반 기본 성능 배율
+    let performanceMultiplier = userTier > 0 ? 0.7 + (userTier - 1) * 0.15 : 1;
+
+    // 2. CPU 병목(Bottleneck) 로직 도입
+    let bottleneckDiscount = 0;
+    if (userTier > 0 && userCpuTier > 0) {
+        if (userCpuTier < userTier) {
+            const diff = userTier - userCpuTier;
+            if (diff === 1) bottleneckDiscount = 0.07;
+            else bottleneckDiscount = 0.15;
+        }
+    }
+    performanceMultiplier *= (1 - bottleneckDiscount);
 
     return (
         <section className="space-y-3">
@@ -78,16 +91,19 @@ export default function ResolutionPerformance({ gpu }: { gpu?: string }) {
                     <Monitor className="w-4 h-4 text-indigo-400" />
                     <h2 className="text-sm font-bold text-zinc-100 tracking-tight">해상도별 게이밍 성능</h2>
                 </div>
-                {userGpu ? (
-                    <div className="flex items-center gap-2">
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 font-bold border border-indigo-500/20">
+                <div className="flex items-center gap-1.5">
+                    {userCpu && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 font-bold border border-zinc-700">
+                            {userCpu.label}
+                        </span>
+                    )}
+                    {userGpu && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 font-extrabold border border-indigo-500/20">
                             {userGpu.config.nvidia?.displayName ?? userGpu.config.amd?.displayName}
                         </span>
-                        <span className="text-[10px] text-zinc-500 font-medium">실시간 예상 성능</span>
-                    </div>
-                ) : (
-                    <span className="text-[10px] text-zinc-500 font-medium">기본 해상도 가이드</span>
-                )}
+                    )}
+                    {userGpu && <span className="text-[10px] text-zinc-500 font-medium ml-1">실시간 예상</span>}
+                </div>
             </div>
 
             {!gpu ? (
