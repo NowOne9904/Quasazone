@@ -37,7 +37,8 @@ export default async function SmartSuggestTier({ quotePrice, quoteGpu, quoteCpu 
                 const res = await fetch(card.searchUrl, { next: { revalidate: 21600 } });
                 const html = await res.text();
 
-                if (html.includes("상품이 없습니다.")) {
+                // sct_noitem 클래스 또는 "상품이 없습니다" 텍스트로 비어있는지 꼼꼼하게 검사
+                if (html.includes("sct_noitem") || html.includes("상품이 없습니다")) {
                     const pcs = await fetchRecommendedPCs();
                     // 가격 오름차순 정렬 후 티어에 맞게 매핑
                     const sorted = [...pcs].sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
