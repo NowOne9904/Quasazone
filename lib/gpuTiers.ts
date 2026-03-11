@@ -77,25 +77,49 @@ function normalize(raw: string): string {
         .replace(/^rx/, "");
 }
 
-// CPU 문자열 → Tier
-const CPU_LOOKUP: Record<string, number> = {
-    // AMD
-    "7500f": 3, "7600": 4, "7700": 5, "7700x": 5, "9700x": 6, "7800x3d": 7, "9800x3d": 9, "9900x": 8, "9950x": 9,
-    "5600": 1, "5600x": 2, "5700x": 3, "5800x3d": 5,
-    // Intel
-    "12100": 1, "12400": 2, "13400": 3, "14400": 3, "13600": 5, "14600": 5, "13700": 6, "14700": 7, "13900": 8, "14900": 9,
-    "245k": 6, "265k": 8, "285k": 9
+// CPU 정보 (티어, 표시명)
+const CPU_DATA: Record<string, { tier: number; label: string }> = {
+    "7500f": { tier: 3, label: "RYZEN 5 7500F" },
+    "7600": { tier: 4, label: "RYZEN 5 7600" },
+    "7700": { tier: 5, label: "RYZEN 7 7700" },
+    "7700x": { tier: 5, label: "RYZEN 7 7700X" },
+    "9700x": { tier: 6, label: "RYZEN 7 9700X" },
+    "7800x3d": { tier: 7, label: "RYZEN 7 7800X3D" },
+    "9800x3d": { tier: 9, label: "RYZEN 7 9800X3D" },
+    "9900x": { tier: 8, label: "RYZEN 9 9900X" },
+    "9950x": { tier: 9, label: "RYZEN 9 9950X" },
+    "5600": { tier: 1, label: "RYZEN 5 5600" },
+    "5600x": { tier: 2, label: "RYZEN 5 5600X" },
+    "5700x": { tier: 3, label: "RYZEN 7 5700X" },
+    "5800x3d": { tier: 5, label: "RYZEN 7 5800X3D" },
+    "12100": { tier: 1, label: "CORE i3-12100" },
+    "12400": { tier: 2, label: "CORE i5-12400" },
+    "13400": { tier: 3, label: "CORE i5-13400" },
+    "14400": { tier: 3, label: "CORE i5-14400" },
+    "13600": { tier: 5, label: "CORE i5-13600" },
+    "14600": { tier: 5, label: "CORE i5-14600" },
+    "13700": { tier: 6, label: "CORE i7-13700" },
+    "14700": { tier: 7, label: "CORE i7-14700" },
+    "13900": { tier: 8, label: "CORE i9-13900" },
+    "14900": { tier: 9, label: "CORE i9-14900" },
+    "245k": { tier: 6, label: "CORE ULTRA 5 245K" },
+    "265k": { tier: 8, label: "CORE ULTRA 7 265K" },
+    "285k": { tier: 9, label: "CORE ULTRA 9 285K" }
 };
 
-export function lookupCpu(cpuParam: string): number {
-    if (!cpuParam) return 0;
+export interface CpuLookupResult {
+    tier: number;
+    label: string;
+}
+
+export function lookupCpu(cpuParam: string): CpuLookupResult | null {
+    if (!cpuParam) return null;
     const cleaned = cpuParam.toLowerCase().replace(/[\s\-_]+/g, "");
 
-    // 키워드 매칭 (예: "i5-14400F" -> "14400" 매칭)
-    for (const [key, tier] of Object.entries(CPU_LOOKUP)) {
-        if (cleaned.includes(key)) return tier;
+    for (const [key, data] of Object.entries(CPU_DATA)) {
+        if (cleaned.includes(key)) return data;
     }
-    return 0;
+    return null;
 }
 
 export interface GpuLookupResult {
