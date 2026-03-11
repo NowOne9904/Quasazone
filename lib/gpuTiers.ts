@@ -171,7 +171,7 @@ export function lookupGpu(gpuParam: string): GpuLookupResult | null {
 }
 
 export function buildSearchUrl(cpu: string, gpu: string): string {
-    return `https://www.youngjaecomputer.com/shop/search.php?search_text=${encodeURIComponent(`${cpu}+${gpu}`)}`;
+    return `https://www.youngjaecomputer.com/shop/search.php?search_text=${encodeURIComponent(cpu)}+${encodeURIComponent(gpu)}`;
 }
 
 /** CPU와 GPU 결과를 종합하여 상위/동급(밸런스)/하위 카드 데이터 생성 */
@@ -192,12 +192,12 @@ export function buildTierCards(gpuResult: GpuLookupResult, cpuResult: CpuLookupR
     if (gTier > 0 && cTier > 0 && gTier - cTier >= 2) {
         const balancedConfig = TIER_CONFIGS.find(t => t.tier === gTier)!;
         sameCard = {
-            label: "밸런스 교정",
+            label: "동급 제안",
             tierLabel: "CPU 성능 보강 제안",
             gpu: (balancedConfig.nvidia ?? balancedConfig.amd)!,
             cpu: balancedConfig.cpuDisplayName,
             searchUrl: buildSearchUrl(balancedConfig.cpu, (balancedConfig.nvidia ?? balancedConfig.amd)!.gpu),
-            isCorrection: true
+            isCorrection: false
         };
     } else if (altGpu) {
         sameCard = {
@@ -220,16 +220,18 @@ export function buildTierCards(gpuResult: GpuLookupResult, cpuResult: CpuLookupR
             gpu: (upperConfig.nvidia ?? upperConfig.amd)!,
             cpu: upperConfig.cpuDisplayName,
             searchUrl: buildSearchUrl(upperConfig.cpu, (upperConfig.nvidia ?? upperConfig.amd)!.gpu),
-            isCorrection: false
+            isCorrection: false,
+            targetTier: upperConfig.tier
         } : null,
-        same: sameCard,
+        same: sameCard ? { ...sameCard, targetTier: gTier } : null,
         lower: lowerConfig ? {
             label: "가성비 선택",
             tierLabel: lowerConfig.label,
             gpu: (lowerConfig.nvidia ?? lowerConfig.amd)!,
             cpu: lowerConfig.cpuDisplayName,
             searchUrl: buildSearchUrl(lowerConfig.cpu, (lowerConfig.nvidia ?? lowerConfig.amd)!.gpu),
-            isCorrection: false
+            isCorrection: false,
+            targetTier: lowerConfig.tier
         } : null,
     };
 }
