@@ -84,20 +84,25 @@ export interface GpuLookupResult {
 }
 
 export function lookupGpu(gpuParam: string): GpuLookupResult | null {
-    // 1. URL 인코딩된 문자열을 디코딩하고 정규화 (%20 -> 공백 등 처리)
+    if (!gpuParam) return null;
+
+    // 1. URL 인코딩 해제 및 정규화
     let decoded = gpuParam;
     try {
         decoded = decodeURIComponent(gpuParam);
     } catch (e) { }
 
-    const normalizedParam = decoded.toLowerCase().replace(/\s+/g, "");
+    // 소문자 변환 및 공백, 특수문자, 브랜드명 제거하여 순수 모델명 추출 시도
+    const cleanedInput = decoded.toLowerCase()
+        .replace(/rtx|rx|geforce|radeon/g, "") // 브랜드명 제거
+        .replace(/[\s\-_%20]+/g, "");         // 공백, 특수문자, %20 등 제거
 
-    // 2. 검색 키워드들을 글자수 내림차순으로 정렬 (예: '4070ti'를 '4070'보다 먼저 검색하여 오진 방지)
+    // 2. 검색 키워드 정렬 (긴 것 우선)
     const sortedKeys = Object.keys(GPU_LOOKUP).sort((a, b) => b.length - a.length);
 
-    // 3. 상품명 안에 우리가 정의한 칩셋 키워드가 포함되어 있는지 하나씩 확인
+    // 3. 부분 일치 확인
     for (const key of sortedKeys) {
-        if (normalizedParam.includes(key)) {
+        if (cleanedInput.includes(key.toLowerCase())) {
             const found = GPU_LOOKUP[key];
             const config = TIER_CONFIGS.find(t => t.tier === found.tier)!;
             return { tier: found.tier, brand: found.brand, config };
