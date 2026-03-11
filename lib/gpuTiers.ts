@@ -107,23 +107,25 @@ export interface GpuLookupResult {
 export function lookupGpu(gpuParam: string): GpuLookupResult | null {
     if (!gpuParam) return null;
 
-    // 1. URL 인코딩 해제 및 정규화
+    // 1. URL 인코딩 해제
     let decoded = gpuParam;
     try {
         decoded = decodeURIComponent(gpuParam);
     } catch (e) { }
 
-    // 소문자 변환 및 공백, 특수문자, 브랜드명 제거하여 순수 모델명 추출 시도
+    // 2. 정규화: 소문자화 + 한글 브랜드명 및 기호 제거
+    // '라데온', '지포스' 등 한글 브랜드명도 제거하여 숫자와 영문 모델명만 남김
     const cleanedInput = decoded.toLowerCase()
-        .replace(/rtx|rx|geforce|radeon/g, "") // 브랜드명 제거
-        .replace(/[\s\-_%20]+/g, "");         // 공백, 특수문자, %20 등 제거
+        .replace(/rtx|rx|geforce|radeon|라데온|지포스/g, "")
+        .replace(/[^a-z0-9]/g, ""); // 영문과 숫자 제외 모두 제거
 
-    // 2. 검색 키워드 정렬 (긴 것 우선)
+    // 3. 검색 키워드 정렬 (긴 것 우선 - '4070ti'가 '4070'보다 먼저 걸리게)
     const sortedKeys = Object.keys(GPU_LOOKUP).sort((a, b) => b.length - a.length);
 
-    // 3. 부분 일치 확인
+    // 4. 부분 일치 확인
     for (const key of sortedKeys) {
-        if (cleanedInput.includes(key.toLowerCase())) {
+        const normalizedKey = key.toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (cleanedInput.includes(normalizedKey)) {
             const found = GPU_LOOKUP[key];
             const config = TIER_CONFIGS.find(t => t.tier === found.tier)!;
             return { tier: found.tier, brand: found.brand, config };

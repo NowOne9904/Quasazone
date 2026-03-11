@@ -4,8 +4,8 @@ import { YouTubeReviewWidget, LiveShippingWidget } from "@/components/MediaWidge
 import RecommendedPCs from "@/components/RecommendedPCs";
 import PremiumBadges from "@/components/PremiumBadges";
 
-// Server Component - 최소 갱신 주기: Naver Cafe 3시간, YouTube/PC 6시간
-export const revalidate = 10800; // 3시간 (최소 주기 기준)
+// Server Component - 테스트를 위해 상시 갱신(1초)으로 임시 변경
+export const revalidate = 1;
 
 export default async function WidgetPage({
     searchParams,
