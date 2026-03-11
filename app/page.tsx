@@ -4,8 +4,7 @@ import { YouTubeReviewWidget, LiveShippingWidget } from "@/components/MediaWidge
 import RecommendedPCs from "@/components/RecommendedPCs";
 import PremiumBadges from "@/components/PremiumBadges";
 
-// Server Component - 테스트를 위해 상시 갱신(1초)으로 임시 변경
-export const revalidate = 1;
+export const dynamic = 'force-dynamic';
 
 export default async function WidgetPage({
     searchParams,

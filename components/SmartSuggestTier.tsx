@@ -27,32 +27,7 @@ export default async function SmartSuggestTier({ quotePrice, quoteGpu, quoteCpu 
 
         const { upper, same, lower } = buildTierCards(gpuResult, cpuResult);
 
-        // 검색 결과 유무를 비동기로 확인하여, 없으면 GPU 단독 검색으로 치환 (다른 사양 조합 유도)
-        const rawCards = [upper, same, lower];
-        const cards = await Promise.all(rawCards.map(async (card) => {
-            if (!card) return null;
-
-            try {
-                // 검색 결과 페이지를 가져와 "상품이 없습니다" 여부 체크 (ISR 캐시 적용)
-                const res = await fetch(card.searchUrl, { next: { revalidate: 21600 } });
-                const html = await res.text();
-
-                // sct_noitem 클래스 또는 "상품이 없습니다" 텍스트로 비어있는지 검사
-                if (html.includes("sct_noitem") || html.includes("상품이 없습니다")) {
-                    // CPU+GPU 조합이 없으므로, 해당 GPU를 사용한 "다른 CPU 조합"들을 볼 수 있게 GPU만으로 검색어 축소
-                    const fallbackSearchUrl = `https://www.youngjaecomputer.com/shop/search.php?search_text=${encodeURIComponent(card.gpu.displayName)}`;
-
-                    return {
-                        ...card,
-                        searchUrl: fallbackSearchUrl,
-                        isFallbackAction: true,
-                    };
-                }
-            } catch (e) {
-                // 에러 발견시 원본 보존
-            }
-            return { ...card, isFallbackAction: false };
-        }));
+        const cards = [upper, same, lower];
 
         return (
             <section className="space-y-3">

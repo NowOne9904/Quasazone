@@ -110,6 +110,7 @@ const CPU_DATA: Record<string, { tier: number; label: string }> = {
 export interface CpuLookupResult {
     tier: number;
     label: string;
+    shortName: string;
 }
 
 export function lookupCpu(cpuParam: string): CpuLookupResult | null {
@@ -117,7 +118,7 @@ export function lookupCpu(cpuParam: string): CpuLookupResult | null {
     const cleaned = cpuParam.toLowerCase().replace(/[\s\-_]+/g, "");
 
     for (const [key, data] of Object.entries(CPU_DATA)) {
-        if (cleaned.includes(key)) return data;
+        if (cleaned.includes(key)) return { ...data, shortName: key };
     }
     return null;
 }
@@ -191,7 +192,7 @@ export function buildTierCards(gpuResult: GpuLookupResult, cpuResult: CpuLookupR
         tierLabel: `${gConfig.label} (브랜드 변경)`,
         gpu: altGpu,
         cpu: cpuResult?.label ?? gConfig.cpuDisplayName,
-        searchUrl: buildSearchUrl(cpuResult?.label ?? gConfig.cpu, altGpu.gpu),
+        searchUrl: buildSearchUrl(cpuResult?.shortName ?? gConfig.cpu, altGpu.gpu),
         isCorrection: false
     } : null;
 
