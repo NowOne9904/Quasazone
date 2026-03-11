@@ -190,8 +190,8 @@ export function buildTierCards(gpuResult: GpuLookupResult, cpuResult: CpuLookupR
         label: "동급 대안",
         tierLabel: `${gConfig.label} (브랜드 변경)`,
         gpu: altGpu,
-        cpu: gConfig.cpuDisplayName,
-        searchUrl: buildSearchUrl(gConfig.cpu, altGpu.gpu),
+        cpu: cpuResult?.label ?? gConfig.cpuDisplayName,
+        searchUrl: buildSearchUrl(cpuResult?.label ?? gConfig.cpu, altGpu.gpu),
         isCorrection: false
     } : null;
 

@@ -108,10 +108,10 @@ export default async function SmartSuggestTier({ quotePrice, quoteGpu, quoteCpu 
                                         href={card.searchUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`w-full py-1.5 px-2 rounded-lg text-[10px] font-extrabold text-center transition-all ${card.isFallbackAction ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : `${style.bg} ${style.text} border ${style.border}`} hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1`}
+                                        className={`w-full py-1.5 px-2 rounded-lg text-[10px] font-extrabold text-center transition-all ${style.bg} ${style.text} border ${style.border} hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1`}
                                     >
                                         <Link2 className="w-2.5 h-2.5" />
-                                        <span>{card.isFallbackAction ? "다른 CPU 셋트 검색" : "YJMOD 검색"}</span>
+                                        <span>YJMOD 검색</span>
                                     </a>
                                 </div>
                             </div>
