@@ -183,32 +183,17 @@ export function buildTierCards(gpuResult: GpuLookupResult, cpuResult: CpuLookupR
     // 1. 상위 제안: 기본적으로 한 단계 위 밸런스 셋트 제안
     const upperConfig = gTier < maxTier ? TIER_CONFIGS.find(t => t.tier === gTier + 1) : null;
 
-    // 2. 동급 대안 / 밸런스 교정
-    let sameCard = null;
+    // 2. 동급 대안: 브랜드 변경
     const altBrand = brand === "nvidia" ? "amd" : "nvidia";
     const altGpu = gConfig[altBrand];
-
-    // 병목이 심한 경우 (CPU 티어가 GPU보다 2단계 이상 낮을 때) 밸런스 교정 제안을 우선함
-    if (gTier > 0 && cTier > 0 && gTier - cTier >= 2) {
-        const balancedConfig = TIER_CONFIGS.find(t => t.tier === gTier)!;
-        sameCard = {
-            label: "동급 제안",
-            tierLabel: "CPU 성능 보강 제안",
-            gpu: (balancedConfig.nvidia ?? balancedConfig.amd)!,
-            cpu: balancedConfig.cpuDisplayName,
-            searchUrl: buildSearchUrl(balancedConfig.cpu, (balancedConfig.nvidia ?? balancedConfig.amd)!.gpu),
-            isCorrection: false
-        };
-    } else if (altGpu) {
-        sameCard = {
-            label: "동급 대안",
-            tierLabel: `${gConfig.label} (브랜드 변경)`,
-            gpu: altGpu,
-            cpu: gConfig.cpuDisplayName,
-            searchUrl: buildSearchUrl(gConfig.cpu, altGpu.gpu),
-            isCorrection: false
-        };
-    }
+    const sameCard = altGpu ? {
+        label: "동급 대안",
+        tierLabel: `${gConfig.label} (브랜드 변경)`,
+        gpu: altGpu,
+        cpu: gConfig.cpuDisplayName,
+        searchUrl: buildSearchUrl(gConfig.cpu, altGpu.gpu),
+        isCorrection: false
+    } : null;
 
     // 3. 가성비 선택: 한 단계 아래 밸런스 셋트 제안
     const lowerConfig = gTier > 1 ? TIER_CONFIGS.find(t => t.tier === gTier - 1) : null;

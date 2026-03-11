@@ -27,7 +27,32 @@ export default async function SmartSuggestTier({ quotePrice, quoteGpu, quoteCpu 
 
         const { upper, same, lower } = buildTierCards(gpuResult, cpuResult);
 
-        const cards = [upper, same, lower];
+        // 검색 결과 유무를 비동기로 확인하여, 없으면 GPU 단독 검색으로 치환 (다른 사양 조합 유도)
+        const rawCards = [upper, same, lower];
+        const cards = await Promise.all(rawCards.map(async (card) => {
+            if (!card) return null;
+
+            try {
+                // 검색 결과 페이지를 가져와 "상품이 없습니다" 여부 체크 (ISR 캐시 적용)
+                const res = await fetch(card.searchUrl, { next: { revalidate: 21600 } });
+                const html = await res.text();
+
+                // sct_noitem 클래스 또는 "상품이 없습니다" 텍스트로 비어있는지 검사
+                if (html.includes("sct_noitem") || html.includes("상품이 없습니다")) {
+                    // CPU+GPU 조합이 없으므로, 해당 GPU를 사용한 "다른 CPU 조합"들을 볼 수 있게 GPU만으로 검색어 축소
+                    const fallbackSearchUrl = `https://www.youngjaecomputer.com/shop/search.php?search_text=${encodeURIComponent(card.gpu.displayName)}`;
+
+                    return {
+                        ...card,
+                        searchUrl: fallbackSearchUrl,
+                        isFallbackAction: true,
+                    };
+                }
+            } catch (e) {
+                // 에러 발견시 원본 보존
+            }
+            return { ...card, isFallbackAction: false };
+        }));
 
         return (
             <section className="space-y-3">
@@ -83,10 +108,10 @@ export default async function SmartSuggestTier({ quotePrice, quoteGpu, quoteCpu 
                                         href={card.searchUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`w-full py-1.5 px-2 rounded-lg text-[10px] font-extrabold text-center transition-all ${card.isCorrection ? "bg-amber-500 text-white border-amber-600" : `${style.bg} ${style.text} border ${style.border}`} hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1`}
+                                        className={`w-full py-1.5 px-2 rounded-lg text-[10px] font-extrabold text-center transition-all ${card.isFallbackAction ? "bg-amber-500/10 text-amber-500 border-amber-500/20" : `${style.bg} ${style.text} border ${style.border}`} hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1`}
                                     >
                                         <Link2 className="w-2.5 h-2.5" />
-                                        <span>{card.isCorrection ? "밸런스 견적 보기" : "YJMOD 검색"}</span>
+                                        <span>{card.isFallbackAction ? "다른 CPU 셋트 검색" : "YJMOD 검색"}</span>
                                     </a>
                                 </div>
                             </div>
