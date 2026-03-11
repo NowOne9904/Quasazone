@@ -13,8 +13,10 @@ export default async function WidgetPage({
     searchParams: Promise<{ price?: string; gpu?: string }>;
 }) {
     const params = await searchParams;
-    const quotePrice = params.price ? parseInt(params.price, 10) : undefined;
-    const quoteGpu = params.gpu ?? undefined;
+
+    // 테스트 및 미리보기를 위해 파라미터가 없을 경우 기본값(Sellpro 예시) 적용
+    const quotePrice = params.price ? parseInt(params.price, 10) : 1313650;
+    const quoteGpu = params.gpu ?? "ASRock 라데온 RX 9060 XT 스틸레전드 OC D6 8GB 대원씨티에스";
 
     return (
         // Hard constraint to 647px max width, centered.
