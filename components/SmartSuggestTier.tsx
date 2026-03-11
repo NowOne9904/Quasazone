@@ -27,42 +27,7 @@ export default async function SmartSuggestTier({ quotePrice, quoteGpu, quoteCpu 
 
         const { upper, same, lower } = buildTierCards(gpuResult, cpuResult);
 
-        // 검색 결과 유무를 비동기로 확인하여, 없으면 MD 추천 PC로 Fallback 적용
-        const rawCards = [upper, same, lower];
-        const cards = await Promise.all(rawCards.map(async (card) => {
-            if (!card) return null;
-
-            try {
-                // 검색 결과 페이지를 가져와 "상품이 없습니다." 여부 체크 (ISR 캐시 적용)
-                const res = await fetch(card.searchUrl, { next: { revalidate: 21600 } });
-                const html = await res.text();
-
-                // sct_noitem 클래스 또는 "상품이 없습니다" 텍스트로 비어있는지 꼼꼼하게 검사
-                if (html.includes("sct_noitem") || html.includes("상품이 없습니다")) {
-                    const pcs = await fetchRecommendedPCs();
-                    // 가격 오름차순 정렬 후 티어에 맞게 매핑
-                    const sorted = [...pcs].sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
-
-                    let fallbackPc;
-                    const tier = card.targetTier;
-                    if (tier <= 3) fallbackPc = sorted[0];
-                    else if (tier <= 5) fallbackPc = sorted[1];
-                    else if (tier <= 7) fallbackPc = sorted[2];
-                    else fallbackPc = sorted[sorted.length - 1];
-
-                    if (fallbackPc) {
-                        return {
-                            ...card,
-                            searchUrl: fallbackPc.link,
-                            isFallbackAction: true,
-                        };
-                    }
-                }
-            } catch (e) {
-                // 에러 발생 시 원래 URL 유지
-            }
-            return { ...card, isFallbackAction: false };
-        }));
+        const cards = [upper, same, lower];
 
         return (
             <section className="space-y-3">
@@ -118,10 +83,10 @@ export default async function SmartSuggestTier({ quotePrice, quoteGpu, quoteCpu 
                                         href={card.searchUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className={`w-full py-1.5 px-2 rounded-lg text-[10px] font-extrabold text-center transition-all ${card.isCorrection ? "bg-amber-500 text-white border-amber-600" : card.isFallbackAction ? "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" : `${style.bg} ${style.text} border ${style.border}`} hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1`}
+                                        className={`w-full py-1.5 px-2 rounded-lg text-[10px] font-extrabold text-center transition-all ${card.isCorrection ? "bg-amber-500 text-white border-amber-600" : `${style.bg} ${style.text} border ${style.border}`} hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-1`}
                                     >
                                         <Link2 className="w-2.5 h-2.5" />
-                                        <span>{card.isCorrection ? "밸런스 견적 보기" : card.isFallbackAction ? "MD 추천 PC 보기" : "YJMOD 검색"}</span>
+                                        <span>{card.isCorrection ? "밸런스 견적 보기" : "YJMOD 검색"}</span>
                                     </a>
                                 </div>
                             </div>
