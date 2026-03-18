@@ -1,0 +1,3 @@
+{
+  "/api/naver/callback/route": "app/api/naver/callback/route.js"
+}

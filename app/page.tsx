@@ -14,9 +14,9 @@ export default async function WidgetPage({
     const params = await searchParams;
 
     // 테스트 및 미리보기를 위해 파라미터가 없을 경우 기본값(Sellpro 예시) 적용
-    const quotePrice = params.price ? parseInt(params.price, 10) : 1313650;
-    const quoteGpu = params.gpu ?? "ASRock 라데온 RX 9060 XT 스틸레전드 OC D6 8GB 대원씨티에스";
-    const quoteCpu = params.cpu ?? "AMD 라이젠5-5세대 7500F (라파엘)";
+    const quotePrice = params.price ? parseInt(params.price, 10) : 2723300;
+    const quoteGpu = params.gpu ?? "MSI 지포스 RTX 5070 게이밍 트리오 OC D7 12GB 트라이프로져4";
+    const quoteCpu = params.cpu ?? "AMD 라이젠5-5세대 7500F (라파엘) (멀티팩(정품))";
 
     return (
         // Hard constraint to 647px max width, centered.
