@@ -47,7 +47,7 @@
         .widget-wrapper {
             width: 100%;
             max-width: 647px;
-            /* 퀘이사존 규격 */
+            /* 퀘이사존 규격 최적화 */
             margin: 0 auto;
             border: 1px solid #333;
             border-radius: 12px;
@@ -57,8 +57,8 @@
 
         iframe {
             width: 100%;
-            height: 1200px;
-            /* 대략적인 높이 */
+            height: 2700px;
+            /* 퀘이사존 검증 최적화 높이 */
             border: none;
         }
 
@@ -146,10 +146,10 @@
             <div class="label">Step 2. 영재컴퓨터 지능형 위젯 (추가될 iframe)</div>
 
             <div class="widget-wrapper">
-                <!-- 셀프로 연동 버전 파라미터 테스트 -->
+                <!-- 셀프로 연동 버전: Selfro 제안(2700px)은 높이이며, 가로폭은 647px이 표준입니다. -->
                 <iframe
                     src="http://localhost:3000/?price=2723300&cpu=AMD 라이젠5-5세대 7500F (라파엘) (멀티팩(정품))&gpu=MSI 지포스 RTX 5070 게이밍 트리오 OC D7 12GB 트라이프로져4"
-                    title="YJMOD Smart Widget"></iframe>
+                    style="width:100%; height:2700px; border:none;" title="YJMOD Smart Widget"></iframe>
             </div>
         </div>
 
