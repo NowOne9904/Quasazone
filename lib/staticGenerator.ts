@@ -160,14 +160,9 @@ export function generateStaticHtml({ quotePrice, quoteGpu, quoteCpu, ytVideo, ca
                 </div>
                 <div>
                     ${cafePosts.slice(0, 5).map((post) => `
-                        <a href="${post.link}" target="_blank" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #222; text-decoration: none;">
-                            <div style="width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background-color: #222; flex-shrink: 0;">
-                                ${post.img ? `<div style="width: 100%; height: 100%; background-image: url('${post.img}'); background-size: cover; background-position: center;"></div>` : ''}
-                            </div>
-                            <div>
-                                <div style="font-size: 12px; font-weight: bold; color: #ccc; margin-bottom: 4px; line-height: 1.2;">${post.title}</div>
-                                <div style="font-size: 10px; color: #666;">${post.time}</div>
-                            </div>
+                        <a href="${post.link}" target="_blank" style="display: block; padding: 12px 16px; border-bottom: 1px solid #222; text-decoration: none;">
+                            <div style="font-size: 12px; font-weight: bold; color: #ccc; margin-bottom: 6px; line-height: 1.3;">${post.title}</div>
+                            <div style="font-size: 10px; color: #666;">${post.time}</div>
                         </a>
                     `).join('')}
                 </div>
@@ -188,10 +183,12 @@ export function generateStaticHtml({ quotePrice, quoteGpu, quoteCpu, ytVideo, ca
                     <span style="color: #f87171; font-weight: bold; font-size: 12px;">▶ 최신 리뷰</span>
                     <span style="font-size: 9px; font-weight: bold; background-color: rgba(239, 68, 68, 0.2); color: #f87171; padding: 2px 6px; border-radius: 12px;">NEW</span>
                 </div>
-                <div style="padding: 12px;">
-                    <a href="${ytVideo.url}" target="_blank" style="display: block; text-decoration: none;">
-                        <div style="width: 100%; border-radius: 12px; aspect-ratio: 16/9; background-color: #222; background-image: url('${ytVideo.thumbnail}'); background-size: cover; background-position: center;"></div>
-                        <div style="margin-top: 12px;">
+                <div style="padding: 16px;">
+                    <a href="${ytVideo.url}" target="_blank" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+                        <div style="width: 40px; height: 40px; background-color: rgba(239,68,68,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(239,68,68,0.3);">
+                            <span style="color: #ef4444; font-size: 14px; margin-left: 2px;">▶</span>
+                        </div>
+                        <div>
                             <div style="font-size: 12px; font-weight: bold; color: #eee; line-height: 1.4; margin-bottom: 4px;">${ytVideo.title}</div>
                             <div style="font-size: 10px; color: #666;">${ytVideo.publishedStr}</div>
                         </div>
@@ -211,15 +208,14 @@ export function generateStaticHtml({ quotePrice, quoteGpu, quoteCpu, ytVideo, ca
                 <table cellpadding="0" cellspacing="10" style="width: 100%; border-collapse: separate; table-layout: fixed;">
                     <tr>
                         ${recommendedPcs.slice(0, 2).map(pc => `
-                            <td style="background-color: rgba(255,255,255,0.02); border: 1px solid #333; border-radius: 16px; vertical-align: top; width: 50%; padding: 0;">
-                                <a href="${pc.link}" target="_blank" style="display: block; text-decoration: none; padding-bottom: 12px;">
-                                    <div style="position: relative;">
-                                        ${pc.img ? `<div style="width: 100%; aspect-ratio: 4/3; border-top-left-radius: 16px; border-top-right-radius: 16px; background-image: url('${pc.img}'); background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #222;"></div>` : `<div style="width: 100%; aspect-ratio: 4/3; background-color: #222; border-top-left-radius: 16px; border-top-right-radius: 16px;"></div>`}
-                                        <span style="position: absolute; top: 10px; left: 10px; background-color: rgba(79, 70, 229, 0.9); color: #fff; font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 12px;">${pc.tabName.replace(" MD 추천 PC", "")}</span>
+                            <td style="background-color: rgba(255,255,255,0.02); border: 1px solid #333; border-radius: 16px; vertical-align: top; width: 50%; padding: 0; overflow: hidden;">
+                                <a href="${pc.link}" target="_blank" style="display: block; text-decoration: none;">
+                                    <div style="background: linear-gradient(135deg, rgba(79, 70, 229, 0.4), rgba(49, 46, 129, 0.1)); padding: 14px; text-align: center; border-bottom: 1px solid #333;">
+                                        <span style="background-color: rgba(79, 70, 229, 0.9); color: #fff; font-size: 10px; font-weight: bold; padding: 4px 10px; border-radius: 12px; display: inline-block;">${pc.tabName.replace(" MD 추천 PC", " 베스트 모델")}</span>
                                     </div>
-                                    <div style="padding: 12px;">
-                                        <div style="font-size: 12px; font-weight: bold; color: #eee; margin-bottom: 8px; line-height: 1.3; height: 32px; overflow: hidden;">${pc.name}</div>
-                                        <div style="font-size: 14px; font-weight: 900; color: #818cf8;">${pc.price}<span style="font-size: 10px; color: #888; font-weight: normal; margin-left: 2px;">원</span></div>
+                                    <div style="padding: 16px 12px;">
+                                        <div style="font-size: 12px; font-weight: bold; color: #eee; margin-bottom: 12px; line-height: 1.4; height: 34px; overflow: hidden;">${pc.name}</div>
+                                        <div style="font-size: 16px; font-weight: 900; color: #818cf8; text-align: right;">${pc.price}<span style="font-size: 11px; color: #888; font-weight: normal; margin-left: 2px;">원</span></div>
                                     </div>
                                 </a>
                             </td>
