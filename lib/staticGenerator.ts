@@ -160,16 +160,16 @@ export function generateStaticHtml({ quotePrice, quoteGpu, quoteCpu, ytVideo, ca
                 </div>
                 <div>
                     ${cafePosts.slice(0, 5).map((post) => `
-                        <a href="${post.link}" target="_blank" style="display: block; padding: 12px 16px; border-bottom: 1px solid #222; text-decoration: none;">
+                        <div style="display: block; padding: 12px 16px; border-bottom: 1px solid #222;">
                             <div style="font-size: 12px; font-weight: bold; color: #ccc; margin-bottom: 6px; line-height: 1.3;">${post.title}</div>
                             <div style="font-size: 10px; color: #666;">${post.time}</div>
-                        </a>
+                        </div>
                     `).join('')}
                 </div>
                 <div style="padding: 12px 16px;">
-                    <a href="https://cafe.naver.com/f-e/cafes/31248285/menus/1?viewType=I" target="_blank" style="display: block; text-align: center; padding: 10px; background-color: rgba(255,255,255,0.05); color: #818cf8; font-size: 11px; font-weight: bold; border-radius: 8px; text-decoration: none; border: 1px solid #333;">
-                        모든 출고현황 보기
-                    </a>
+                    <div style="display: block; text-align: center; padding: 10px; background-color: rgba(255,255,255,0.05); color: #818cf8; font-size: 11px; font-weight: bold; border-radius: 8px; border: 1px solid #333;">
+                        모든 출고현황 보기 (공식 카페)
+                    </div>
                 </div>
             </div>
         `;
@@ -184,7 +184,7 @@ export function generateStaticHtml({ quotePrice, quoteGpu, quoteCpu, ytVideo, ca
                     <span style="font-size: 9px; font-weight: bold; background-color: rgba(239, 68, 68, 0.2); color: #f87171; padding: 2px 6px; border-radius: 12px;">NEW</span>
                 </div>
                 <div style="padding: 16px;">
-                    <a href="${ytVideo.url}" target="_blank" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
                         <div style="width: 40px; height: 40px; background-color: rgba(239,68,68,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; border: 1px solid rgba(239,68,68,0.3);">
                             <span style="color: #ef4444; font-size: 14px; margin-left: 2px;">▶</span>
                         </div>
@@ -192,7 +192,7 @@ export function generateStaticHtml({ quotePrice, quoteGpu, quoteCpu, ytVideo, ca
                             <div style="font-size: 12px; font-weight: bold; color: #eee; line-height: 1.4; margin-bottom: 4px;">${ytVideo.title}</div>
                             <div style="font-size: 10px; color: #666;">${ytVideo.publishedStr}</div>
                         </div>
-                    </a>
+                    </div>
                 </div>
             </div>
         `;
