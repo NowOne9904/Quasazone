@@ -24,9 +24,9 @@ export async function GET(request: Request) {
         quoteCpu: cpu,
         quoteGpu: gpu,
         quotePrice: price,
-        ytVideo,
-        cafePosts: cafePosts.slice(0, 5), // 상위 5개만 노출 (정적 버전)
-        recommendedPcs: recommendedPcs.slice(0, 2) // 상위 2개만 노출 (정적 버전 2단 그리드)
+        ytVideo: null, // 테스트를 위해 네이버 카페/유튜브 임시 비활성화
+        cafePosts: [], // 테스트를 위해 네이버 카페/유튜브 임시 비활성화
+        recommendedPcs: recommendedPcs.slice(0, 2) // 상위 2개만 노출
     });
 
     // 자사몰(PHP) 및 타 도메인에서 호출할 수 있도록 CORS 헤더 추가 반환
