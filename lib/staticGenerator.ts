@@ -144,7 +144,7 @@ export function generateStaticHtml({ quotePrice, quoteGpu, quoteCpu, ytVideo, ca
     // 카카오톡 버튼
     content += `
         <div style="margin-bottom: 24px;">
-            <a href="http://pf.kakao.com/_sxmjxgT/chat" target="_blank" style="display: block; background-color: ${COLORS.kakao}; color: #371d1e; text-decoration: none; font-size: 14px; font-weight: 800; text-align: center; padding: 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+            <a href="https://pf.kakao.com/_sxmjxgT/chat" target="_blank" style="display: block; background-color: ${COLORS.kakao}; color: #371d1e; text-decoration: none; font-size: 14px; font-weight: 800; text-align: center; padding: 12px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
                 💬 카카오톡 실시간 견적 상담 문의
             </a>
         </div>
@@ -162,7 +162,7 @@ export function generateStaticHtml({ quotePrice, quoteGpu, quoteCpu, ytVideo, ca
                     ${cafePosts.slice(0, 5).map((post) => `
                         <a href="${post.link}" target="_blank" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid #222; text-decoration: none;">
                             <div style="width: 40px; height: 40px; border-radius: 8px; overflow: hidden; background-color: #222; flex-shrink: 0;">
-                                ${post.img ? `<img src="${post.img}" style="width: 100%; height: 100%; object-fit: cover;" />` : ''}
+                                ${post.img ? `<div style="width: 100%; height: 100%; background-image: url('${post.img}'); background-size: cover; background-position: center;"></div>` : ''}
                             </div>
                             <div>
                                 <div style="font-size: 12px; font-weight: bold; color: #ccc; margin-bottom: 4px; line-height: 1.2;">${post.title}</div>
@@ -190,7 +190,7 @@ export function generateStaticHtml({ quotePrice, quoteGpu, quoteCpu, ytVideo, ca
                 </div>
                 <div style="padding: 12px;">
                     <a href="${ytVideo.url}" target="_blank" style="display: block; text-decoration: none;">
-                        <img src="${ytVideo.thumbnail}" style="width: 100%; border-radius: 12px; object-fit: cover; aspect-ratio: 16/9; background-color: #222;" />
+                        <div style="width: 100%; border-radius: 12px; aspect-ratio: 16/9; background-color: #222; background-image: url('${ytVideo.thumbnail}'); background-size: cover; background-position: center;"></div>
                         <div style="margin-top: 12px;">
                             <div style="font-size: 12px; font-weight: bold; color: #eee; line-height: 1.4; margin-bottom: 4px;">${ytVideo.title}</div>
                             <div style="font-size: 10px; color: #666;">${ytVideo.publishedStr}</div>
@@ -214,7 +214,7 @@ export function generateStaticHtml({ quotePrice, quoteGpu, quoteCpu, ytVideo, ca
                             <td style="background-color: rgba(255,255,255,0.02); border: 1px solid #333; border-radius: 16px; vertical-align: top; width: 50%; padding: 0;">
                                 <a href="${pc.link}" target="_blank" style="display: block; text-decoration: none; padding-bottom: 12px;">
                                     <div style="position: relative;">
-                                        ${pc.img ? `<img src="${pc.img}" style="width: 100%; aspect-ratio: 4/3; object-fit: cover; border-top-left-radius: 16px; border-top-right-radius: 16px;" />` : `<div style="width: 100%; aspect-ratio: 4/3; background-color: #222; border-top-left-radius: 16px; border-top-right-radius: 16px;"></div>`}
+                                        ${pc.img ? `<div style="width: 100%; aspect-ratio: 4/3; border-top-left-radius: 16px; border-top-right-radius: 16px; background-image: url('${pc.img}'); background-size: cover; background-position: center; background-repeat: no-repeat; background-color: #222;"></div>` : `<div style="width: 100%; aspect-ratio: 4/3; background-color: #222; border-top-left-radius: 16px; border-top-right-radius: 16px;"></div>`}
                                         <span style="position: absolute; top: 10px; left: 10px; background-color: rgba(79, 70, 229, 0.9); color: #fff; font-size: 9px; font-weight: bold; padding: 2px 6px; border-radius: 12px;">${pc.tabName.replace(" MD 추천 PC", "")}</span>
                                     </div>
                                     <div style="padding: 12px;">

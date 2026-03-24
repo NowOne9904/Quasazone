@@ -24,8 +24,8 @@ export async function GET(request: Request) {
         quoteCpu: cpu,
         quoteGpu: gpu,
         quotePrice: price,
-        ytVideo: null, // 테스트를 위해 네이버 카페/유튜브 임시 비활성화
-        cafePosts: [], // 테스트를 위해 네이버 카페/유튜브 임시 비활성화
+        ytVideo,
+        cafePosts: cafePosts.slice(0, 5), // 상위 5개만 노출
         recommendedPcs: recommendedPcs.slice(0, 2) // 상위 2개만 노출
     });
 
